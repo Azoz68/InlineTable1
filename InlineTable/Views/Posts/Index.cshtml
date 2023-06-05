@@ -1,0 +1,150 @@
+﻿@model IEnumerable<InlineTable.Entities.Post>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table" id="tablePost">
+    <tr>
+        <th>
+            Id
+        </th>
+        <th>
+            PostTitle
+        </th>
+        <th>
+            PostDesc
+        </th>
+        <th>
+            PublishDate
+        </th>
+        <th>
+            Auher_Name
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td class="postId">
+                <span>@item.Id</span>
+            </td>
+            <td class="postTitle">
+                <span>
+                    @item.PostTitle
+                </span>
+                <input type="text" value="@item.PostTitle" style="display:none;" />
+            </td>
+            <td class="postDesc">
+                <span>
+                    @item.PostDesc
+                </span>
+                <input type="text" value="@item.PostDesc" style="display:none;" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishDate)
+            </td>
+            <td class="auher_Name">
+                <span>
+                    @item.Auher_Name
+                </span>
+                <input type="text" value="@item.Auher_Name" style="display:none;" />
+            </td>
+            <td>
+                <a class="Edit" id="editId" href="javascript:;">Edit</a>
+                <a class="Update" id="updatId" href="javascript:;" style="display:none">Update</a>
+                <a class="Cancel" id="cancelId" href="javascript:;" style="display:none">Cancel</a>
+
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+
+<script type="text/javascript">
+
+
+    $("#tablePost #editId").click(function () {
+        debugger;
+        var row = $(this).closest("tr");
+        //alert(row.val);
+        console.log(row);
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                $(this).find("input").show();
+                $(this).find("span").hide();
+            }
+        });
+
+        row.find(".Update").show();
+        row.find(".Cancel").show();
+        $(this).hide();
+    });
+
+
+    $("#tablePost #cancelId").click(function () {
+        debugger;
+        var row = $(this).closest("tr");
+        //alert(row.val);
+        console.log(row);
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                $(this).find("input").hide();
+                $(this).find("span").show();
+            }
+        });
+
+        row.find(".Update").hide();
+        row.find(".Edit").show();
+        $(this).hide();
+    });
+
+
+    $("#tablePost #updatId").click(function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                var span = $(this).find("span");
+                var input = $(this).find("input");
+                span.html(input.val());
+                span.show();
+                input.hide();
+            }
+        });
+        row.find(".Edit").show();
+        row.find(".Cancel").hide();
+        $(this).hide();
+
+
+        var post = {
+            Id: parseInt(row.find(".postId").find("span").html()),
+            PostTitle: row.find(".postTitle").find("span").html(),
+            PostDesc: row.find(".postDesc").find("span").html(),
+            Auher_Name: row.find(".auher_Name").find("span").html()
+        };
+
+
+        $.ajax({
+            type: "POST",
+            url: "/Posts/UpdatePost",
+            data: '{post:' + JSON.stringify(post) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        });
+    });
+
+
+
+
+</script>

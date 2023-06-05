@@ -1,0 +1,136 @@
+﻿@model IEnumerable<InlineTable.Models.Post>
+
+@{
+    ViewBag.Title = "TryInline";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>TryInline</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table" id="tblPosts">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PostTitle)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostDesc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PublishDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Auher_Name)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostTitle,  new { @id = "postTitle" })
+                
+                    <input type="text" value="@item.PostTitle" style="display:none" />
+                
+               @* @Html.HiddenFor(modelItem => item.PostTitle, htmlAttributes: new { id = "postTitle" })*@
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostDesc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Auher_Name)
+                <input type="text" value="@item.Auher_Name" style="display:none" />
+            </td>
+            <td>
+                <a class="Edit" href="javascript:;">Edit</a>
+                <a class="Update" href="javascript:;" style="display:none">Update</a>
+                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+
+
+
+
+<script type="text/javascript">
+const { post } = require("jquery");
+
+
+
+    //Edit event handler.
+    $("body").on("click", "#tblPosts .Edit", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                $(this).find("input").show();
+                $(this).find("#postTitle").hide();
+            }
+        });
+        row.find(".Update").show();
+        row.find(".Cancel").show();
+        row.find(".Delete").hide();
+        $(this).hide();
+    });
+
+    //Update event handler.
+    $("body").on("click", "#tblPosts .Update", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                var span = $(this).find("#postTitle");
+                var input = $(this).find("input");
+                span.html(input.val());
+                span.show();
+                input.hide();
+            }
+        });
+        row.find(".Edit").show();
+        row.find(".Delete").show();
+        row.find(".Cancel").hide();
+        $(this).hide();
+
+        var post = {};
+        customer.CustomerId = row.find(".CustomerId").find("span").html();
+        customer.Name = row.find(".Name").find("span").html();
+        customer.Country = row.find(".Country").find("span").html();
+        $.ajax({
+            type: "POST",
+            url: "/Posts/UpdatePost",
+            data: '{post:' + JSON.stringify(post) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        });
+    });
+
+    //Cancel event handler.
+    $("body").on("click", "#tblPosts .Cancel", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                var span = $(this).find("span");
+                var input = $(this).find("input");
+                input.val(span.html());
+                span.show();
+                input.hide();
+            }
+        });
+        row.find(".Edit").show();
+        row.find(".Delete").show();
+        row.find(".Update").hide();
+        $(this).hide();
+    });
+
+    
+</script>
